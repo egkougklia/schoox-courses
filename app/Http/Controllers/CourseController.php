@@ -4,9 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Course;
 use App\Services\CourseService;
-use App\Http\Requests\StoreCourseRequest;
-use App\Http\Requests\UpdateCourseRequest;
-use App\Http\Requests\PatchCourseRequest;
+use App\Http\Requests\Courses\IndexCourseRequest;
+use App\Http\Requests\Courses\StoreCourseRequest;
+use App\Http\Requests\Courses\UpdateCourseRequest;
+use App\Http\Requests\Courses\PatchCourseRequest;
 
 
 class CourseController extends Controller
@@ -20,9 +21,9 @@ class CourseController extends Controller
     /**
      * Get all Courses
      */
-    public function index()
+    public function index(IndexCourseRequest $request)
     {
-        return $this->courseService->index();
+        return $this->courseService->index($request->validated());
     }
 
     /**

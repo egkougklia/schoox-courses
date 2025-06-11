@@ -120,7 +120,7 @@ CMD ["php-fpm"]
 # Stage 3: Development image
 FROM production AS development
 
-# Use ARGs to define environment variables passed from the Docker build command or Docker Compose.
+# Use ARG to define environment variables passed from the Docker build command or Docker Compose.
 ARG XDEBUG_ENABLED=true
 ARG XDEBUG_MODE=develop,coverage,debug,profile
 ARG XDEBUG_HOST=host.docker.internal

@@ -19,6 +19,19 @@ class CourseEndpointsTest extends TestCase
         $response->assertStatus(200)->assertJson($courses->toArray(), true);
     }
 
+    public function test_get_all_courses_filters(): void
+    {
+        $premium_course = Course::factory()->hasTags(1, ['name' => 'test tag 1'])->create([
+            'is_premium' => true
+        ]);
+        $standard_course = Course::factory()->hasTags(1, ['name' => 'test tag 1'])->create([
+            'is_premium' => false
+        ]);
+        $response = $this->get('/api/courses?is_premium=true');
+
+        $response->assertStatus(200)->assertJson([$premium_course->toArray()], true);
+    }
+
     public function test_get_course(): void
     {
         $course = Course::factory()->hasTags(1)->create();

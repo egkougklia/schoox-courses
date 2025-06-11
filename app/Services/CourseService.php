@@ -12,15 +12,26 @@ class CourseService
     /**
      * Get all courses
      */
-    public function index()
+    public function index(array $requestFields)
     {
-        return Course::all();
+        return Course::when(array_key_exists('is_premium', $requestFields), function ($query) use ($requestFields) {
+            $query->where('is_premium', $requestFields['is_premium']); 
+        })
+        ->when($requestFields['status'] ?? false, function ($query, $status) {
+            $query->where('status', $status);
+        })
+        ->when($requestFields['tag'] ?? false, function ($query, $tag) {
+            $query->whereHas('tags', function ($query) use ($tag) {
+                $query->where('name', $tag);
+            });
+        })
+        ->get();
     }
 
     /**
      * Create course based on request values, along with tags
      */
-    public function store($requestFields)
+    public function store(array $requestFields)
     {
         $newCourse = Course::create($requestFields);
 
@@ -41,7 +52,7 @@ class CourseService
     /**
      * Update existing course based on request values, along with tags
      */
-    public function update($requestFields, Course $course)
+    public function update(array $requestFields, Course $course)
     {
         $course->update($requestFields);
 
@@ -54,7 +65,7 @@ class CourseService
     /**
      * Partially update existing course based on request values, along with tags
      */
-    public function patch($requestFields, Course $course)
+    public function patch(array $requestFields, Course $course)
     {
         $course->update($requestFields);
         
@@ -80,7 +91,7 @@ class CourseService
      * The function creates any tags that don't already exist
      * and attaches all of the $tags in the specified $course.
      */
-    private function saveTags(Course $course, $tags)
+    private function saveTags(Course $course, array $tags)
     {
         $tagIds = [];
         if ($tags) {

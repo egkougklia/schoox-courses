@@ -23,9 +23,38 @@ class CourseServiceTest extends TestCase
     {
         $courses = Course::factory()->count(2)->create();
         $this->assertDatabaseCount('courses', 2);
-        $indexCourses = $this->courseService->index();
+        $indexCourses = $this->courseService->index([]);
         $this->assertTrue($courses[0]->is($indexCourses[0]));
         $this->assertTrue($courses[1]->is($indexCourses[1]));
+    }
+
+    public function test_course_index_with_filters(): void
+    {
+        $premium_course = Course::factory()->create([
+            'is_premium' => true,
+        ]);
+        $standard_course = Course::factory()->create([
+            'is_premium' => false
+        ]);
+        $this->assertDatabaseCount('courses', 2);
+        $indexCourses = $this->courseService->index(['is_premium' => true]);
+        $this->assertTrue($indexCourses[0]->is($premium_course));
+    }
+
+    public function test_course_index_with_multiple_filters(): void
+    {
+        $premium_course = Course::factory()->hasTags(1, ['name' => 'test 1'])->create([
+            'is_premium' => true,
+        ]);
+        $standard_course_1 = Course::factory()->hasTags(1, ['name' => 'test 1'])->create([
+            'is_premium' => true
+        ]);
+        $standard_course_2 = Course::factory()->hasTags(1, ['name' => 'test 2'])->create([
+            'is_premium' => false
+        ]);
+        $this->assertDatabaseCount('courses', 3);
+        $indexCourses = $this->courseService->index(['is_premium' => true, 'tag' => 'test 1']);
+        $this->assertTrue($indexCourses[0]->is($premium_course));
     }
 
     public function test_course_store(): void

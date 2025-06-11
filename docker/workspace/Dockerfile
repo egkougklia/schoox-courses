@@ -27,9 +27,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && pecl install xdebug \
     && docker-php-ext-enable xdebug\
     && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
-    && apt-get autoremove -y && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
-    && docker-php-ext-configure pcntl --enable-pcntl \
-    && docker-php-ext-install pcntl
+    && apt-get autoremove -y && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Use ARG to define environment variables passed from the Docker build command or Docker Compose.
 ARG XDEBUG_ENABLED
@@ -59,6 +57,9 @@ RUN if getent group ${GID}; then \
     fi && \
     usermod -aG sudo www && \
     echo 'www ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+
+# Switch to the non-root user to install NVM and Node.js
+USER www
 
 # Set the working directory
 WORKDIR /var/www

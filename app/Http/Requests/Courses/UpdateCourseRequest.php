@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Courses;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use App\Enums\CourseStatus;
 use App\Rules\XSSValidation;
 
-class PatchCourseRequest extends FormRequest
+class UpdateCourseRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,11 +25,11 @@ class PatchCourseRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title' => ['sometimes', 'string', 'max:255', new XSSValidation],
-            'description' => ['sometimes', 'string', new XSSValidation],
-            'status' => ['sometimes', 'string', Rule::enum(CourseStatus::class)],
-            'is_premium' => 'sometimes|boolean',
-            'tags' => 'sometimes|array',
+            'title' => ['required', 'string', 'max:255', new XSSValidation],
+            'description' => ['required', 'string', new XSSValidation],
+            'status' => ['string', Rule::enum(CourseStatus::class)],
+            'is_premium' => 'boolean',
+            'tags' => 'nullable|array',
             'tags.*' => ['required', 'string', new XSSValidation]
         ];
     }
